@@ -9,7 +9,7 @@ class Profile extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Colors.black87,
           title: const Padding(
-            padding: EdgeInsets.fromLTRB(110, 0, 0, 0),
+            padding: EdgeInsets.fromLTRB(110, 0, 30, 0),
             child: Text('Profile Page'),
           ),
           actions: [
@@ -26,7 +26,7 @@ class Profile extends StatelessWidget {
                 },
             ),
             const SizedBox(
-                width: 24),
+                width: 10),
           ],
         ),
         body: Padding(
