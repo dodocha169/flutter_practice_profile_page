@@ -3,32 +3,39 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'settings.dart';
 
 class Profile extends StatelessWidget {
+  const Profile({super.key});
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.black87,
-          title: const Padding(
-            padding: EdgeInsets.fromLTRB(110, 0, 30, 0),
-            child: Text('Profile Page'),
+          iconTheme: theme.primaryIconTheme,
+          backgroundColor: theme.primaryColor,
+          title: Padding(
+            padding: const EdgeInsets.fromLTRB(110, 0, 30, 0),
+            child: Text(
+              style: theme.primaryTextTheme.titleLarge,
+              'Profile Page',
+            ),
           ),
           actions: [
             IconButton(
-              icon: const Icon(Icons.settings),
+              icon: const Icon(
+                Icons.settings,
+              ),
               tooltip: 'Settings',
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder:
-                          (context) => Settings()),
+                  MaterialPageRoute(builder: (context) => const Settings()),
                 );
-                },
+              },
             ),
-            const SizedBox(
-                width: 10),
+            const SizedBox(width: 10),
           ],
         ),
+        backgroundColor: Colors.grey.shade300,
         body: Padding(
           padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Column(
@@ -39,7 +46,7 @@ class Profile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(140),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.grey.shade400,
                       spreadRadius: 10,
                       blurRadius: 5,
                       offset: const Offset(0, 3),
@@ -59,55 +66,56 @@ class Profile extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.fromLTRB(0, 20, 0, 30),
                 child: Text('dodocha169',
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold)
-                ),
+                    style:
+                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
               ),
               Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton.icon(
-                    icon: const FaIcon(FontAwesomeIcons.github),
+                    icon: const FaIcon(
+                      FontAwesomeIcons.github,
+                      color: Colors.white,
+                    ),
                     onPressed: () {},
                     style: ButtonStyle(
-                        shape: MaterialStateProperty.all<
-                            RoundedRectangleBorder>(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),
                           ),
                         ),
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Colors.black87),
-                        padding: MaterialStateProperty.all(
+                        backgroundColor:
+                            WidgetStateProperty.all<Color>(Colors.black87),
+                        padding: WidgetStateProperty.all(
                           const EdgeInsets.symmetric(
-                              vertical: 15,
-                              horizontal: 20),
-                        )
-                    ),
-                    label: const Text('GitHub'),
+                              vertical: 15, horizontal: 20),
+                        )),
+                    label: Text('GitHub',
+                        style: theme.primaryTextTheme.labelLarge),
                   ),
                   const SizedBox(width: 18),
                   ElevatedButton.icon(
-                    icon: const FaIcon(FontAwesomeIcons.twitter),
+                    icon: const FaIcon(
+                      FontAwesomeIcons.twitter,
+                      color: Colors.white,
+                    ),
                     onPressed: () {},
                     style: ButtonStyle(
-                      shape:
-                      MaterialStateProperty.all<RoundedRectangleBorder>(
+                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
                       ),
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.blue.shade600),
-                      padding: MaterialStateProperty.all(
+                      backgroundColor:
+                          WidgetStateProperty.all<Color>(Colors.blue.shade600),
+                      padding: WidgetStateProperty.all(
                         const EdgeInsets.symmetric(
-                            vertical: 15,
-                            horizontal: 20),
+                            vertical: 15, horizontal: 20),
                       ),
                     ),
-                    label: const Text(
+                    label: Text(
+                      style: theme.primaryTextTheme.labelLarge,
                       "Twitter",
                     ),
                   ),
@@ -115,7 +123,6 @@ class Profile extends StatelessWidget {
               ),
             ],
           ),
-        )
-    );
+        ));
   }
 }
