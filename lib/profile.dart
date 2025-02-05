@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'settings.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -26,10 +25,7 @@ class Profile extends StatelessWidget {
               ),
               tooltip: 'Settings',
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const Settings()),
-                );
+                Navigator.pushNamed(context, '/settings');
               },
             ),
             const SizedBox(width: 10),

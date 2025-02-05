@@ -20,7 +20,7 @@ class Settings extends StatelessWidget {
         Expanded(
             child: SettingsList(sections: [
           SettingsSection(title: const Text('Account'), tiles: <SettingsTile>[
-            SettingsTile.navigation(
+            SettingsTile(
               leading: const Icon(Icons.account_circle),
               title: const Text('User name'),
               value: const Text('dodocha169'),
