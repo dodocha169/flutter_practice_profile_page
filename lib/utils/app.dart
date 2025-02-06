@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
-import 'profile.dart';
-import 'settings.dart';
-
-final List<String> entries = <String>[
-  'flutter_practice_signup',
-  'flutter_practice_credit_card_checkout',
-  'flutter_practice_landing_page',
-  'flutter_practice_calculator'
-];
+import '../pages/signin.dart';
+import '../pages/profile.dart';
+import '../pages/settings.dart';
+import '../pages/register.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -31,10 +26,12 @@ class App extends StatelessWidget {
             ),
             primaryIconTheme: const IconThemeData(color: Colors.white)),
         routes: {
+          '/register': (context) => const Register(),
+          '/signin': (context) => const SignIn(),
           '/profile': (context) => const Profile(),
           '/settings': (context) => const Settings(),
         },
         debugShowCheckedModeBanner: false,
-        home: const Profile());
+        home: const SignIn());
   }
 }

@@ -58,6 +58,9 @@ class Settings extends StatelessWidget {
           ),
           SettingsSection(title: const Text(''), tiles: <SettingsTile>[
             SettingsTile.navigation(
+              onPressed: (context) {
+                Navigator.pushNamed(context, '/signin');
+              },
               leading: const Icon(Icons.logout),
               title: const Text('Sign out'),
             ),

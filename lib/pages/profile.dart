@@ -9,6 +9,7 @@ class Profile extends StatelessWidget {
     final theme = Theme.of(context);
     return Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           iconTheme: theme.primaryIconTheme,
           backgroundColor: theme.primaryColor,
           title: Padding(
