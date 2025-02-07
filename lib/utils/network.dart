@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart';
 
 class Network {
-  final String _url = 'http://localhost/api';
+  final String _url = 'http://localhost/Laravel_Auth_Flutter/Public/api/auth';
   String? token;
 
   _setToken() async {

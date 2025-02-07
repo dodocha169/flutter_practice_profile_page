@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:convert';
 import '../utils/network.dart';
 import '../pages/profile.dart';
@@ -21,9 +20,11 @@ class RegisterState extends State<Register> {
   String? _password;
 
   Future<void> _register() async {
-    if (!_formKey.currentState!.validate()) {
+    final formState = _formKey.currentState;
+    if (formState == null || !formState.validate()) {
       return;
     }
+    formState.save();
 
     setState(() {
       _isLoading = true;
@@ -38,6 +39,8 @@ class RegisterState extends State<Register> {
     Response? res;
     try {
       res = await Network().postData(data, '/register');
+      debugPrint('Res Status: ${res.statusCode}');
+      debugPrint('Res body: ${res.body}');
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -54,7 +57,20 @@ class RegisterState extends State<Register> {
       return;
     }
 
-    var body = json.decode(res.body);
+    Map<String, dynamic> body;
+    try {
+      body = json.decode(res.body);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Invalid response format: ${e.toString()}'),
+        ));
+      }
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     if (res.statusCode != 200) {
       if (mounted) {
@@ -97,7 +113,7 @@ class RegisterState extends State<Register> {
                           keyboardType: TextInputType.text,
                           decoration: const InputDecoration(hintText: 'Name'),
                           validator: (nameValue) {
-                            if (nameValue == null || nameValue.isEmpty) {
+                            if (nameValue == null || nameValue == "") {
                               return 'Name is required';
                             }
                             return null;
@@ -112,12 +128,6 @@ class RegisterState extends State<Register> {
                           validator: (String? emailValue) {
                             if (emailValue == null || emailValue == "") {
                               return 'Email is required';
-                            }
-                            bool emailValid =
-                                RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
-                                    .hasMatch(emailValue);
-                            if (!emailValid) {
-                              return '正しいメールアドレスを入力してください';
                             }
                             return null;
                           },

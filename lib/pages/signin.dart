@@ -18,9 +18,11 @@ class SigninState extends State<SignIn> {
   String? _password;
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) {
+    final formState = _formKey.currentState;
+    if (formState == null || !formState.validate()) {
       return;
     }
+    formState.save();
 
     setState(() {
       _isLoading = true;

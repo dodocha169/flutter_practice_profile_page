@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class Profile extends StatelessWidget {
+class Profile extends StatefulWidget {
   const Profile({super.key});
+  @override
+  ProfileState createState() => ProfileState();
+}
+
+class ProfileState extends State<Profile> {
+  String? _name;
+  String? _email;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
