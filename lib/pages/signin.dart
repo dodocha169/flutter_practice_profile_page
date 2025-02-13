@@ -89,12 +89,13 @@ class SigninState extends State<SignIn> {
                   )
                 : Form(
                     key: _formKey,
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(16, 100, 16, 0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           TextFormField(
+                            keyboardType: TextInputType.emailAddress,
                             decoration: InputDecoration(
                               labelText: 'Email',
                               border: OutlineInputBorder(),
