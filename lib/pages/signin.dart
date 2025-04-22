@@ -1,146 +1,110 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_practice_profile_page/pages/profile.dart';
-import 'dart:convert';
-import '../utils/network.dart';
-import 'package:http/http.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../pages/home_page.dart';
+import '../pages/register.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+class Signin extends StatefulWidget {
+  const Signin({super.key});
+
   @override
-  SigninState createState() => SigninState();
+  State<Signin> createState() => _LoginScreenState();
 }
 
-class SigninState extends State<SignIn> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-  String? _email;
-  String? _password;
+class _LoginScreenState extends State<Signin> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _login() async {
-    final formState = _formKey.currentState;
-    if (formState == null || !formState.validate()) {
-      return;
-    }
-    formState.save();
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isSubmitting = true);
 
-    Map<String, String> data = {
-      'email': _email!,
-      'password': _password!,
-    };
-
-    Response? res;
     try {
-      res = await Network().postData(data, '/signin');
+      await Provider.of<AuthProvider>(context, listen: false).login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
     } catch (e) {
-      debugPrint(e.toString());
-    }
-
-    if (res == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('An error occurred'),
-        ));
+        setState(() => _isSubmitting = false);
       }
-      setState(() {
-        _isLoading = false;
-      });
-      return;
     }
-
-    var body = json.decode(res.body);
-
-    if (res.statusCode != 200) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(body['message']),
-        ));
-      }
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    localStorage.setString('token', json.encode(body['token']));
-    localStorage.setString('user', json.encode(body['user']));
-
-    if (!mounted) return;
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: false,
-          backgroundColor: theme.primaryColor,
-          title: Text('Sign In', style: theme.primaryTextTheme.titleLarge),
+      appBar: AppBar(title: const Text('ログイン')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'メールアドレス'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'メールアドレスを入力してください';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'パスワード'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'パスワードを入力してください';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _isSubmitting ? null : _login,
+                child: _isSubmitting
+                    ? const CircularProgressIndicator()
+                    : const Text('ログイン'),
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const Register()),
+                  );
+                },
+                child: const Text('アカウント登録はこちら'),
+              ),
+            ],
+          ),
         ),
-        body: SafeArea(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : Form(
-                    key: _formKey,
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(16, 100, 16, 0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          TextFormField(
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Email is required';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _email = value;
-                            },
-                          ),
-                          const SizedBox(height: 16.0),
-                          TextFormField(
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              labelText: 'Password',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Password is required';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _password = value;
-                            },
-                          ),
-                          const SizedBox(height: 16.0),
-                          ElevatedButton(
-                            onPressed: _login,
-                            child: const Text('Sign In'),
-                          ),
-                          const SizedBox(height: 16.0),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/register');
-                            },
-                            child: const Text('Register'),
-                          ),
-                        ],
-                      ),
-                    ))));
+      ),
+    );
   }
 }

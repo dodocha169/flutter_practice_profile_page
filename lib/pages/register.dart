@@ -1,165 +1,135 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
-import '../utils/network.dart';
-import '../pages/profile.dart';
-import 'package:http/http.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
+import '../pages/home_page.dart';
 
 class Register extends StatefulWidget {
-  const Register({super.key});
+  const Register({Key? key}) : super(key: key);
 
   @override
-  RegisterState createState() => RegisterState();
+  State<Register> createState() => _RegisterScreenState();
 }
 
-class RegisterState extends State<Register> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
-  String? _name;
-  String? _email;
-  String? _password;
+class _RegisterScreenState extends State<Register> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _passwordConfirmationController = TextEditingController();
+  bool _isSubmitting = false;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmationController.dispose();
+    super.dispose();
+  }
 
   Future<void> _register() async {
-    final formState = _formKey.currentState;
-    if (formState == null || !formState.validate()) {
-      return;
-    }
-    formState.save();
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isSubmitting = true);
 
-    Map<String, String> data = {
-      'name': _name!,
-      'email': _email!,
-      'password': _password!,
-    };
-
-    Response? res;
     try {
-      res = await Network().postData(data, '/register');
-      debugPrint('Res Status: ${res.statusCode}');
-      debugPrint('Res body: ${res.body}');
+      await Provider.of<AuthProvider>(context, listen: false).register(
+        _nameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text,
+        _passwordConfirmationController.text,
+      );
+
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const HomePage()),
+        );
+      }
     } catch (e) {
-      debugPrint(e.toString());
-    }
-
-    if (res == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('An error occurred'),
-        ));
+        setState(() => _isSubmitting = false);
       }
-      setState(() {
-        _isLoading = false;
-      });
-      return;
     }
-
-    Map<String, dynamic> body;
-    try {
-      body = json.decode(res.body);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Invalid response format: ${e.toString()}'),
-        ));
-      }
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-
-    if (res.statusCode != 200) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(body['message']),
-        ));
-      }
-      setState(() {
-        _isLoading = false;
-      });
-      return;
-    }
-
-    SharedPreferences localStorage = await SharedPreferences.getInstance();
-    localStorage.setString('token', json.encode(body['token']));
-    localStorage.setString('user', json.encode(body['user']));
-
-    if (!mounted) return;
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Profile()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Register'),
+      appBar: AppBar(title: const Text('アカウント登録')),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(labelText: 'ユーザー名'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'ユーザー名を入力してください';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'メールアドレス'),
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'メールアドレスを入力してください';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(labelText: 'パスワード'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'パスワードを入力してください';
+                  }
+                  if (value.length < 6) {
+                    return 'パスワードは6文字以上必要です';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordConfirmationController,
+                decoration: const InputDecoration(labelText: 'パスワード（確認）'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'パスワード（確認）を入力してください';
+                  }
+                  if (value != _passwordController.text) {
+                    return 'パスワードが一致しません';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: _isSubmitting ? null : _register,
+                child: _isSubmitting
+                    ? const CircularProgressIndicator()
+                    : const Text('登録'),
+              ),
+            ],
+          ),
+        ),
       ),
-      body: SafeArea(
-          child: _isLoading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Form(
-                  key: _formKey,
-                  child: Container(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: <Widget>[
-                        TextFormField(
-                          keyboardType: TextInputType.text,
-                          decoration: const InputDecoration(hintText: 'Name'),
-                          validator: (nameValue) {
-                            if (nameValue == null || nameValue == "") {
-                              return 'Name is required';
-                            }
-                            return null;
-                          },
-                          onSaved: (nameValue) {
-                            _name = nameValue!;
-                          },
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(hintText: 'Email'),
-                          validator: (String? emailValue) {
-                            if (emailValue == null || emailValue == "") {
-                              return 'Email is required';
-                            }
-                            return null;
-                          },
-                          onSaved: (emailValue) {
-                            _email = emailValue!;
-                          },
-                        ),
-                        TextFormField(
-                          keyboardType: TextInputType.text,
-                          decoration:
-                              const InputDecoration(hintText: 'Password'),
-                          obscureText: true,
-                          validator: (passwordValue) {
-                            if (passwordValue == null || passwordValue == "") {
-                              return 'Password is required';
-                            }
-                            return null;
-                          },
-                          onSaved: (passwordValue) {
-                            _password = passwordValue!;
-                          },
-                        ),
-                        SizedBox(height: 20),
-                        ElevatedButton(
-                          onPressed: () {
-                            _register();
-                          },
-                          child: const Text('Register'),
-                        ),
-                      ],
-                    ),
-                  ))),
     );
   }
 }

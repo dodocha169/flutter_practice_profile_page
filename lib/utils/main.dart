@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'app.dart';
-import 'package:flutter/rendering.dart';
+import '../utils/app.dart';
 
 void main() {
-  debugPaintSizeEnabled = false;
   runApp(const App());
 }

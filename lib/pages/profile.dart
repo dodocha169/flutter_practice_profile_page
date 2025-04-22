@@ -12,7 +12,7 @@ class Profile extends StatefulWidget {
 
 class ProfileState extends State<Profile> {
   String? _name;
-  bool _isLoading = false;
+  final bool _isLoading = false;
 
   @override
   void initState() {
