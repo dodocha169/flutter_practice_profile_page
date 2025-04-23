@@ -4,7 +4,7 @@ import '../providers/auth_provider.dart';
 import '../pages/home_page.dart';
 
 class Register extends StatefulWidget {
-  const Register({Key? key}) : super(key: key);
+  const Register({super.key});
 
   @override
   State<Register> createState() => _RegisterScreenState();
@@ -68,6 +68,9 @@ class _RegisterScreenState extends State<Register> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: 'ユーザー名'),
                 validator: (value) {
@@ -79,6 +82,9 @@ class _RegisterScreenState extends State<Register> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'メールアドレス'),
                 keyboardType: TextInputType.emailAddress,
@@ -91,6 +97,9 @@ class _RegisterScreenState extends State<Register> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _passwordController,
                 decoration: const InputDecoration(labelText: 'パスワード'),
                 obscureText: true,
@@ -106,6 +115,9 @@ class _RegisterScreenState extends State<Register> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _passwordConfirmationController,
                 decoration: const InputDecoration(labelText: 'パスワード（確認）'),
                 obscureText: true,

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../pages/home_page.dart';
 import '../pages/register.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class Signin extends StatefulWidget {
   const Signin({super.key});
@@ -53,8 +54,9 @@ class _LoginScreenState extends State<Signin> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = L10n.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('ログイン')),
+      appBar: AppBar(title: Text(l10n.signin)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -63,8 +65,11 @@ class _LoginScreenState extends State<Signin> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _emailController,
-                decoration: const InputDecoration(labelText: 'メールアドレス'),
+                decoration: InputDecoration(labelText: l10n.email),
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -75,8 +80,11 @@ class _LoginScreenState extends State<Signin> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _passwordController,
-                decoration: const InputDecoration(labelText: 'パスワード'),
+                decoration: InputDecoration(labelText: l10n.password),
                 obscureText: true,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -90,7 +98,7 @@ class _LoginScreenState extends State<Signin> {
                 onPressed: _isSubmitting ? null : _login,
                 child: _isSubmitting
                     ? const CircularProgressIndicator()
-                    : const Text('ログイン'),
+                    : Text(l10n.signin),
               ),
               const SizedBox(height: 16),
               TextButton(
@@ -99,7 +107,7 @@ class _LoginScreenState extends State<Signin> {
                     MaterialPageRoute(builder: (_) => const Register()),
                   );
                 },
-                child: const Text('アカウント登録はこちら'),
+                child: Text(l10n.register),
               ),
             ],
           ),

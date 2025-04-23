@@ -127,6 +127,9 @@ class _EditProfileScreenState extends State<EditProfile> {
 
               // Twitter URL
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _twitterController,
                 decoration: const InputDecoration(
                   labelText: 'Twitter URL',
@@ -150,6 +153,9 @@ class _EditProfileScreenState extends State<EditProfile> {
 
               // GitHub URL
               TextFormField(
+                onTapOutside: (event) {
+                  primaryFocus?.unfocus();
+                },
                 controller: _githubController,
                 decoration: const InputDecoration(
                   labelText: 'GitHub URL',

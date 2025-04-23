@@ -2,38 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../pages/splash_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-// class App extends StatelessWidget {
-//   const App({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//         theme: ThemeData(
-//             primarySwatch: Colors.blueGrey,
-//             primaryColor: Colors.black87,
-//             primaryTextTheme: const TextTheme(
-//               bodyLarge: TextStyle(color: Colors.black),
-//               labelLarge: TextStyle(
-//                 color: Colors.white,
-//                 fontStyle: FontStyle.normal,
-//               ),
-//               titleLarge: TextStyle(
-//                   color: Colors.white,
-//                   fontStyle: FontStyle.normal,
-//                   fontWeight: FontWeight.bold),
-//             ),
-//             primaryIconTheme: const IconThemeData(color: Colors.white)),
-//         routes: {
-//           '/register': (context) => const Register(),
-//           '/signin': (context) => const SignIn(),
-//           '/profile': (context) => const Profile(),
-//           '/settings': (context) => const Settings(),
-//         },
-//         debugShowCheckedModeBanner: false,
-//         home: const SignIn());
-//   }
-// }
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -44,7 +14,10 @@ class App extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
+        localizationsDelegates: L10n.localizationsDelegates,
+        supportedLocales: L10n.supportedLocales,
         title: 'Profile App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
